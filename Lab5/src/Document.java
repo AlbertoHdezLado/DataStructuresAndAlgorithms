@@ -145,22 +145,21 @@ public class Document {
         }
     }
 
+    public void selectSort(int[] arr) {
+        showArray(arr);
+        for (int i = arr.length; i > 1; i--) {
+            int maxPos = 0;
+            for (int pos = 0; pos < i; pos++)
+                if (arr[maxPos] < arr[pos])
+                    maxPos = pos;
+            swap(arr, i - 1, maxPos);
+            showArray(arr);
+        }
+    }
+
     private void swap(int[] arr, int i, int j) {
         int tmp = arr[i];
         arr[i] = arr[j];
         arr[j] = tmp;
     }
-
-    public void selectSort(int[] arr) {
-        showArray(arr);
-        for (int border = arr.length; border > 1; border--) {
-            int maxPos = 0;
-            for (int pos = 0; pos < border; pos++)
-                if (arr[maxPos] < arr[pos])
-                    maxPos = pos;
-            swap(arr, border - 1, maxPos);
-            showArray(arr);
-        }
-    }
-
 }
