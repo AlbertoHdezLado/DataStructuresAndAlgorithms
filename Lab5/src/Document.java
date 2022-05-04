@@ -12,7 +12,6 @@ public class Document {
     }
 
     public void load(Scanner scan) {
-        //TODO
         String marker = "link=";
         String endMarker = "eod";
         String line = scan.nextLine().toLowerCase();
@@ -34,7 +33,6 @@ public class Document {
     // accepted only small letters, capitalic letter, digits nad '_' (but not on the begin)
 
     public static boolean isCorrectId(String id) {
-        //TODO
         id = id.toLowerCase();
         if (id.length() == 0) return false;
         if (id.charAt(0) < 'a' || id.charAt(0) > 'z')
@@ -55,7 +53,6 @@ public class Document {
 
     // accepted only small letters, capitalic letter, digits nad '_' (but not on the begin)
     public static Link createLink(String link) {
-        //TODO
         if (link.length() == 0) return null;
         int openBracket = link.indexOf('(');
         int closeBracket = link.indexOf(')');
@@ -76,9 +73,6 @@ public class Document {
 
     @Override
     public String toString() { ////
-		/*String retStr="Document: "+name;
-		//TODO
-		return retStr;*/
         String retStr = "Document: " + name;
         int counter = 0;
         for (Link linkElem : link) {
@@ -93,7 +87,6 @@ public class Document {
     }
 
     public String toStringReverse() {
-
         String retStr = "Document: " + name;
         int counter = 0;
         ListIterator<Link> iter = link.listIterator();
@@ -111,7 +104,6 @@ public class Document {
     }
 
     public int[] getWeights() {
-        //TODO
         int[] arr = new int[link.size()];
         int i = 0;
         for (Link linkElem : link) {
@@ -121,7 +113,6 @@ public class Document {
     }
 
     public static void showArray(int[] arr) {
-        // TODO
         if (arr.length > 0) {
             System.out.print(arr[0]);
             for (int i = 1; i < arr.length; i++)
@@ -130,26 +121,8 @@ public class Document {
         System.out.println();
     }
 
-    void bubbleSort(int[] arr) {
-        showArray(arr);
-        //TODO
-        for (int begin = 0; begin < arr.length - 1; begin++) {
-            for (int j = arr.length - 1; j > begin; j--)
-                if (arr[j - 1] > arr[j])
-                    swap(arr, j - 1, j);
-            showArray(arr);
-        }
-    }
-
-    private void swap(int[] arr, int i, int j) {
-        int tmp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = tmp;
-    }
-
     public void insertSort(int[] arr) {
         showArray(arr);
-        //TODO
         for (int pos = arr.length - 2; pos >= 0; pos--) {
             int value = arr[pos];
             int i = pos + 1;
@@ -162,9 +135,24 @@ public class Document {
         }
     }
 
+    void bubbleSort(int[] arr) {
+        showArray(arr);
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = arr.length - 1; j > i; j--)
+                if (arr[j - 1] > arr[j])
+                    swap(arr, j - 1, j);
+            showArray(arr);
+        }
+    }
+
+    private void swap(int[] arr, int i, int j) {
+        int tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+    }
+
     public void selectSort(int[] arr) {
         showArray(arr);
-        //TODO
         for (int border = arr.length; border > 1; border--) {
             int maxPos = 0;
             for (int pos = 0; pos < border; pos++)

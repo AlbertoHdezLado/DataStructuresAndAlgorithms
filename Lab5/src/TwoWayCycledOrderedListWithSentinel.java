@@ -1,19 +1,16 @@
 import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.*;
 
 public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
 
     private class Element {
         public Element(E e) {
-            //TODO
             this.object = e;
             this.next = this;
             this.prev = this;
         }
 
         public Element(E e, Element next, Element prev) {
-            //TODO
             this.object = e;
             this.next = next;
             this.prev = prev;
@@ -21,7 +18,6 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
 
         // add element e after this
         public void addAfter(Element elem) {
-            //TODO
             elem.next = this.next;
             elem.prev = this;
             this.next.prev = elem;
@@ -30,9 +26,8 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
 
         // assert it is NOT a sentinel
         public void remove() {
-            //TODO
-            this.next.prev = this.prev;
             this.prev.next = this.next;
+            this.next.prev = this.prev;
         }
 
         E object;
@@ -45,56 +40,40 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
     int size;
 
     private class InnerIterator implements Iterator<E> {
-        //TODO
-        Element p;
-        int pos = 0;
+        Element e;
 
         public InnerIterator() {
-            //TODO
-            pos = 0;
-            p = sentinel.next;
+            e = sentinel;
         }
 
         @Override
         public boolean hasNext() {
-            //TODO
-            return pos < size;
+            return e.next.object != null;
         }
 
         @Override
         public E next() {
-            //TODO
-            E elem = p.object;
-            p = p.next;
-            pos++;
-            return elem;
+            e = e.next;
+            return e.object;
         }
     }
 
     private class InnerListIterator implements ListIterator<E> {
-        //TODO
-        Element p;
-        int pos = 0;
+        Element e;
 
         public InnerListIterator() {
-            //TODO
-            pos = 0;
-            p = sentinel.next;
+            e = sentinel;
         }
 
         @Override
         public boolean hasNext() {
-            //TODO
-            return pos < size;
+            return e.next.object != null;
         }
 
         @Override
         public E next() {
-            //TODO
-            E elem = p.object;
-            p = p.next;
-            pos++;
-            return elem;
+            e = e.next;
+            return e.object;
         }
 
         @Override
@@ -104,8 +83,7 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
 
         @Override
         public boolean hasPrevious() {
-            //TODO
-            return pos > 0;
+            return e.prev.object != null;
         }
 
         @Override
@@ -115,10 +93,8 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
 
         @Override
         public E previous() {
-            //TODO
-            pos--;
-            p = p.prev;
-            return p.object;
+            e = e.prev;
+            return e.object;
         }
 
         @Override
@@ -138,44 +114,42 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
     }
 
     public TwoWayCycledOrderedListWithSentinel() {
-        //TODO
         sentinel = new Element(null);
-        sentinel.next = sentinel;
-        sentinel.prev = sentinel;
     }
 
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     @Override
     public boolean add(E e) {
-        //TODO
-        Element p = sentinel.next;
-        while (p != sentinel && ((Comparable<E>) p.object).compareTo(e) <= 0)
-            p = p.next;
-        p.prev.addAfter(new Element(e));
+        InnerListIterator iter = new InnerListIterator();
+        if (iter.hasNext()) iter.next();
+        while (iter.e != sentinel && ((Comparable<E>) iter.e.object).compareTo(e) <= 0) iter.next();
+        iter.previous();
+        iter.e.addAfter(new Element(e));
         size++;
         return true;
     }
 
     private Element getElement(int index) {
-        //TODO
-        checkIndex(index);
-        Element p = sentinel.next;
-        while (index > 0) {
-            index--;
-            p = p.next;
+        InnerListIterator iter = new InnerListIterator();
+        Element elem = null;
+        int i = -1;
+        while (iter.hasNext() && i < index) {
+            iter.next();
+            i++;
         }
-        return p;
+        if (i == index) elem = iter.e;
+        return elem;
     }
 
     private Element getElement(E obj) {
-        //TODO
-        Element p = sentinel.next;
-        while (p != sentinel) {
-            if (p.object.equals(obj))
-                return p;
-            p = p.next;
+        InnerListIterator iter = new InnerListIterator();
+        Element elem = null;
+        boolean found = false;
+        while (iter.hasNext() && !found) if (iter.next().equals(obj)) {
+            found = true;
+            elem = iter.e;
         }
-        return null;
+        return elem;
     }
 
     @Override
@@ -184,28 +158,24 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
 
     }
 
-    private void checkIndex(int index) {
-        if (index < 0 || index >= size) throw new NoSuchElementException();
-    }
-
-
     @Override
     public void clear() {
-        //TODO
-        sentinel.next = sentinel;
-        sentinel.prev = sentinel;
+        InnerListIterator iter = new InnerListIterator();
+        iter.e.next = iter.e;
+        iter.e.prev = iter.e;
         size = 0;
     }
 
     @Override
     public boolean contains(E element) {
-        //TODO
-        return indexOf(element) != -1;
+        InnerListIterator iter = new InnerListIterator();
+        boolean found = false;
+        while (iter.hasNext() && !found) if (iter.next().equals(element)) found = true;
+        return found;
     }
 
     @Override
     public E get(int index) {
-        //TODO
         return getElement(index).object;
     }
 
@@ -216,25 +186,20 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
 
     @Override
     public int indexOf(E element) {
-        //TODO
-        Element p = sentinel.next;
-        int counter = 0;
-        counter++;
-        while (p != sentinel) {
-            if (p.object.equals(element))
-                return counter;
-            else {
-                counter++;
-                p = p.next;
-            }
+        InnerListIterator iter = new InnerListIterator();
+        int pos = -1;
+        boolean found = false;
+        while (iter.hasNext() && !found) {
+            if (iter.next().equals(element)) found = true;
+            pos++;
         }
-        return -1;
+        return pos;
     }
 
     @Override
     public boolean isEmpty() {
-        //TODO
-        return sentinel.next == sentinel;
+        InnerListIterator iter = new InnerListIterator();
+        return iter.e.next == iter.e;
     }
 
     @Override
@@ -249,89 +214,83 @@ public class TwoWayCycledOrderedListWithSentinel<E> implements IList<E> {
 
     @Override
     public E remove(int index) {
-        //TODO
-        Element p = getElement(index);
-        E retValue = p.object;
-        p.remove();
-        size--;
-        return retValue;
+        Element elem = getElement(index);
+        if (elem != null) {
+            elem.remove();
+            size--;
+        }
+        return elem.object;
     }
 
     @Override
     public boolean remove(E e) {
-        //TODO
-        Element p = getElement(e);
-        if (p == null)
-            return false;
-        p.remove();
-        size--;
-        return true;
+        Element elem = getElement(e);
+        if (elem != null) {
+            elem.remove();
+            size--;
+        }
+        return elem != null;
     }
 
     @Override
     public int size() {
-        //TODO
         return size;
     }
 
-    public String toStringReverse() {
-        //TODO
-        ListIterator<E> iter = new InnerListIterator();
-        while (iter.hasNext())
-            iter.next();
-        String retStr = "";
-        while (iter.hasPrevious())
-            retStr += "\n" + iter.previous().toString();
-        return retStr;
-    }
-
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     public void add(TwoWayCycledOrderedListWithSentinel<E> other) {
-        //TODO
-
-        if (this == other)
-            return;
-        if (other.isEmpty())
-            return;
-        // this empty, but other not
-        if (isEmpty()) {
-            sentinel.next = other.sentinel.next;
-            sentinel.prev = other.sentinel.prev;
-            size = other.size;
-            other.clear();
-        } else { // both not empty
-            Element p1 = sentinel.next;
-            Element p2 = other.sentinel.next;
-            while (p1 != sentinel && p2 != other.sentinel) {
-                if (((Comparable<E>) p1.object).compareTo(p2.object) <= 0) {
-                    p1 = p1.next;
-                } else {
-                    p2 = p2.next;
-                    p1.prev.addAfter(p2.prev);
+        if (!other.isEmpty()) {
+            InnerListIterator iter = new InnerListIterator();
+            Element elem = other.getElement(0);
+            if (iter.hasNext()) {
+                iter.next();
+                while (elem.object != null) {
+                    if (((Comparable<E>) elem.object).compareTo(iter.e.object) < 0) {
+                        this.add(elem.object);
+                        elem = elem.next;
+                    } else iter.next();
                 }
             }
-            while (p2 != other.sentinel) {
-                p2 = p2.next;
-                p1.prev.addAfter(p2.prev);
+            else {
+                while (elem.object != null) {
+                    this.add(elem.object);
+                    elem = elem.next;
+                }
             }
-            size += other.size;
+            size += other.size();
             other.clear();
         }
-
-
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    //@SuppressWarnings({ "unchecked", "rawtypes" })
     public void removeAll(E e) {
-        //TODO
-        Element p = getElement(e);
-        if (p == null)
-            return;
-        while (p != sentinel && ((Comparable) p.object).compareTo(e) == 0) {
-            p.remove();
-            p = p.next;
-            size--;
+        InnerListIterator iter = new InnerListIterator();
+        E obj = null;
+        Element elem = null;
+        while (iter.hasNext()) {
+            obj = iter.next();
+            if (obj.equals(e)) {
+                elem = iter.e;
+                iter.previous();
+                elem.remove();
+            }
         }
+    }
+
+    public String toStringReverse() {
+        InnerListIterator iter = new InnerListIterator();
+        String retStr = "";
+        if (iter.hasPrevious()) {
+            retStr = "\n" + iter.previous().toString();
+            int count = 1;
+            while (iter.hasPrevious()) {
+                if (count % 10 == 0) retStr += "\n";
+                else retStr += " ";
+                retStr += iter.previous().toString();
+                count++;
+            }
+        }
+        return retStr;
     }
 
 }
