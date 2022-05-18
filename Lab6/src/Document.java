@@ -166,79 +166,98 @@ public class Document {
         }
     }
 
-    public static void merge(int[] arr, int[] temp, int left, int mid, int right) {
+    // Merge two sorted subarrays
+    public static void merge(int[] A, int[] temp, int left, int mid, int right)
+    {
+        int k = left, i = left, j = mid + 1;
 
-        if (right > arr.length) {
-            right = arr.length;
-        }
-
-        int i = left;
-        int j = mid;
-        for (int k = left; k < right; k++) {
-            if (i == mid) {
-                temp[k] = arr[j++];
-
-            } else if (j == right) {
-                temp[k] = arr[i++];
-            } else if (arr[j] < arr[i]) {
-                temp[k] = arr[j++];
-            } else {
-                temp[k] = arr[i++];
+        while (i <= mid && j <= right)
+        {
+            if (A[i] < A[j]) {
+                temp[k++] = A[i++];
+            }
+            else {
+                temp[k++] = A[j++];
             }
         }
-        if (right - left >= 0) {
-            System.arraycopy(temp, left, arr, left, right - left);
+
+        // copy remaining elements
+        while (i <= mid) {
+            temp[k++] = A[i++];
+        }
+
+        for (i = left; i <= right; i++) {
+            A[i] = temp[i];
         }
     }
 
+    // Iteratively sort subarray `A[low…high]` using a temporary array
+    public static void iterativeMergeSort(int[] A)
+    {
+        showArray(A);
+        int low = 0;
+        int high = A.length - 1;
 
-    public void iterativeMergeSort(int[] arr) {
-        int[] temp = new int[arr.length];
-        showArray(arr);
-        for (int i = 1; i < arr.length; i *= 2) {
-            for (int j = 0; j < arr.length; j += 2 * i) {
-                merge(arr, temp, j, i + j, j + 2 * i);
+        // sort array `A[]` using a temporary array `temp`
+        int[] temp = Arrays.copyOf(A, A.length);
+
+        // divide the array into blocks of size `m`
+        for (int m = 1; m <= high - low; m = 2*m)
+        {
+
+            for (int i = low; i < high; i += 2*m)
+            {
+                int left = i;
+                int mid = i + m - 1;
+                int right = Integer.min(i + 2*m - 1, high);
+
+                merge(A, temp, left, mid, right);
             }
-
-            showArray(arr);
+            showArray(A);
         }
+
     }
 
-    private int findMax(int[] arr) {
+    public static void CountingSortByExp (int[] arr, int exp) {
+        int[] output = new int[arr.length];
+
+        // Largest element
         int max = arr[0];
         for (int i = 1; i < arr.length; i++) {
-            if (arr[i] > max) {
+            if (arr[i] > max)
                 max = arr[i];
-            }
         }
-        return max;
-    }
+        int[] count = new int[max + 1];
 
-    public static void countByExp(int[] arr, int exp) {
-        int[] output = new int[arr.length];
-        int[] count = new int[10];
-        Arrays.fill(count, 0);
+        // Fill count array (0)
+        for (int i = 0; i < max; ++i) {
+            count[i] = 0;
+        }
 
+        // Count numbers
         for (int j = 0; j < arr.length; j++) {
-            count[(arr[j] / exp) % 10]++; //coloca en las posiciones del array segun el resto
+            count[(arr[j] / exp) % 10]++;
         }
-        for (int i = 1; i < 10; i++) { //sum |
+
+        // Cumulative sum
+        for (int i = 1; i < 10; i++) {
             count[i] += count[i - 1];
         }
+
+        // Order the output
         for (int i = arr.length - 1; i >= 0; i--) {
-            output[count[(arr[i] / exp) % 10] - 1] = arr[i];
-            count[(arr[i]) / exp % 10]--;
+            int counter = count[(arr[i] / exp) % 10]--;
+            output[counter - 1] = arr[i];
         }
+
         System.arraycopy(output, 0, arr, 0, arr.length);
         showArray(output);
     }
 
     public void radixSort(int[] arr) {
         showArray(arr);
-        findMax(arr);
         for (int exp = 1; exp < 1000; exp *= 10) {
-            countByExp(arr, exp);
+            CountingSortByExp(arr, exp);
         }
-
     }
 } 
