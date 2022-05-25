@@ -3,95 +3,84 @@ import java.util.Set;
 
 public class DisjointSetLinkedList implements DisjointSetDataStructure {
 
-	
-    private class Element
-    {
+
+    private class Element {
         Element representative;
         Element next;
         Element last;
         int length;
         int value;
-    }
 
-    private static final int NULL = -1;
+        public Element(int value) {
+            this.representative = this;
+            this.next = null;
+            this.last = this;
+            this.length = 1;
+            this.value = value;
+        }
+    }
 
     Element arr[];
 
-    public DisjointSetLinkedList(int size)
-    {
+    public DisjointSetLinkedList(int size) {
         arr = new Element[size];
     }
 
     @Override
-    public void makeSet(int x)
-    {
-        Element e = new Element();
-        e.representative = e;
-        e.next = null;
-        e.length = 1;
-        e.last = e;
-        e.value = x;
-        arr[x] = e;
+    public void makeSet(int item) {
+        Element e = new Element(item);
+        arr[item] = e;
     }
 
     @Override
-    public int findSet(int x)
-    {
-        return arr[x].representative.value;
+    public int findSet(int item) {
+        return arr[item].representative.value;
     }
 
     @Override
-    public boolean union(int x, int y)
-    {
-        Element repX = arr[x].representative;
-        Element repY = arr[y].representative;
-        
-        if (repX.value == repY.value) {
+    public boolean union(int itemA, int itemB) {
+        Element repA = arr[itemA].representative;
+        Element repB = arr[itemB].representative;
+
+        if (repA.value == repB.value) {
             return false;
         }
-        
-        if (repY.length > repX.length) {
-            Element tmp = repX;
-            repX = repY;
-            repY = tmp;
+
+        if (repB.length > repA.length) {
+            Element aux = repA;
+            repA = repB;
+            repB = aux;
         }
 
-        Element lastX = repX.last;
-        lastX.next = repY;
-        repX.last = repY.last;
-        
-        while (repY != null) {
-            repX.length++;
-            repY.representative = repX;
-            repY = repY.next;
+        repA.last.next = repB;
+        repA.last = repB.last;
+
+        while (repB != null) {
+            repA.length++;
+            repB.representative = repA;
+            repB = repB.next;
         }
-        
+
         return true;
     }
 
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder result = new StringBuilder("Disjoint sets as linked list:\n");
         Set<Integer> processed = new HashSet<>();
-        for (int i = 0; i < arr.length; i++)
-        {
+        for (int i = 0; i < arr.length; i++) {
             Element e = arr[i].representative;
-            if (!processed.contains(e.value))
-            {
+            if (!processed.contains(e.value)) {
                 processed.add(e.value);
-                while (e != null)
-                {
+                while (e != null) {
                     result.append(e.value);
                     e = e.next;
-                    if (e != null)
-                    {
+                    if (e != null) {
                         result.append(", ");
                     }
                 }
-                if (i < arr.length - 2)
-                {
+                if (i < arr.length - 2) {
                     result.append("\n");
                 }
             }

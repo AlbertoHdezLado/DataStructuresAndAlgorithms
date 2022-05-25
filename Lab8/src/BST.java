@@ -204,20 +204,17 @@ public class BST<T extends Comparable> {
 
 
     public T remove(T value) {
-        // TODO
         removedValue = null;
         root = remove(value, root);
         return removedValue;
     }
 
     public void clear() {
-        // TODO
         root = null;
         size = 0;
     }
 
     public int size() {
-        // TODO
         return size;
     }
 
